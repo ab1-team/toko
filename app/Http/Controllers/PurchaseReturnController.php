@@ -79,6 +79,7 @@ class PurchaseReturnController extends Controller
                     'transactions.return_parent_id',
                     'BS.name as location_name',
                     'T.ref_no as parent_purchase',
+                    'TP.id_rekening_debit',
                     DB::raw('SUM(TP.amount) as amount_paid')
                 )
                 ->groupBy('transactions.id');
@@ -101,7 +102,11 @@ class PurchaseReturnController extends Controller
             }
             return Datatables::of($purchases_returns)
                 ->addColumn('action', function ($row) {
-                    $html = '<a href="' . action('PurchaseReturnController@add', $row->return_parent_id) . '" class="btn btn-info btn-xs" ><i class="glyphicon glyphicon-edit"></i>' .
+                    $action = 'PurchaseReturnController@add';
+                    if ($row->id_rekening_debit == '211.09') {
+                        $action = 'PurchaseReturnController@addConsignment';
+                    }
+                    $html = '<a href="' . action($action, $row->return_parent_id) . '" class="btn btn-info btn-xs" ><i class="glyphicon glyphicon-edit"></i>' .
                         __("messages.edit") .
                         '</a>';
 
