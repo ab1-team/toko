@@ -469,6 +469,7 @@ return [
 	'sending' => 'Dikirim',
 	'request_method' => 'Metode Permintaan',
 	'purchase_return' => 'Retur Pembelian',
+	'purchase_return_consignment' => 'Retur Pembelian Konsinyasi',
 	'return_quantity' => 'Kuantitas Retur',
 	'refund_quantity' => 'Kuantitas Refund',
 	'return_subtotal' => 'Sub Total Retur',

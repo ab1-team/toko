@@ -294,7 +294,9 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::get('backup/download/{file_name}', 'BackUpController@download');
     Route::get('backup/delete/{file_name}', 'BackUpController@delete');
     Route::resource('backup', 'BackUpController', ['only' => [
-        'index', 'create', 'store'
+        'index',
+        'create',
+        'store'
     ]]);
 
     //tutup buku
@@ -312,6 +314,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::post('notification/send', 'NotificationController@send');
 
     Route::get('/purchase-return/add/{id}', 'PurchaseReturnController@add');
+    Route::get('/purchase-return/add-consignment/{id}', 'PurchaseReturnController@addConsignment');
     Route::resource('/purchase-return', 'PurchaseReturnController');
 
     //Restaurant module

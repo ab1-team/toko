@@ -182,6 +182,8 @@ class PurchaseController extends Controller
                     if (auth()->user()->can("purchase.update")) {
                         $html .= '<li><a href="' . action('PurchaseReturnController@add', [$row->id]) .
                             '"><i class="fa fa-undo" aria-hidden="true" ></i>' . __("lang_v1.purchase_return") . '</a></li>';
+                        $html .= '<li><a href="' . action('PurchaseReturnController@addConsignment', [$row->id]) .
+                            '"><i class="fa fa-undo" aria-hidden="true" ></i>' . __("lang_v1.purchase_return_consignment") . '</a></li>';
                     }
 
                     if (auth()->user()->can("send_notification")) {

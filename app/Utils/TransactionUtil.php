@@ -718,6 +718,13 @@ class TransactionUtil extends Util
                         }
                     }
                 }
+
+                if ($payment_method == 'konsinyasi') {
+                    if ($rek_type = 'pr') {
+                        $kd_rekening_kredit   = '131.13';
+                        $kd_rekening_debit  = '211.09';
+                    }
+                }
         }
 
         return array(
@@ -2613,8 +2620,10 @@ class TransactionUtil extends Util
                 ->where('transactions.business_id', $business['id'])
                 ->where('transactions.location_id', $business['location_id'])
                 ->whereIn('transactions.type', [
-                    'purchase', 'purchase_transfer',
-                    'opening_stock', 'opening_stock'
+                    'purchase',
+                    'purchase_transfer',
+                    'opening_stock',
+                    'opening_stock'
                 ])
                 ->where('transactions.status', 'received')
                 ->whereRaw('(PL.quantity_sold + PL.quantity_returned) < (PL.quantity + PL.quantity_adjusted)');
@@ -2843,8 +2852,10 @@ class TransactionUtil extends Util
                 ->where('transactions.business_id', $business['id'])
                 ->where('transactions.location_id', $business['location_id'])
                 ->whereIn('transactions.type', [
-                    'purchase', 'purchase_transfer',
-                    'opening_stock', 'opening_stock'
+                    'purchase',
+                    'purchase_transfer',
+                    'opening_stock',
+                    'opening_stock'
                 ])
                 ->where('transactions.status', 'received')
                 ->where('PL.product_id', $line->product_id)
@@ -3305,7 +3316,8 @@ class TransactionUtil extends Util
                     'SAL.variation_id AS adjust_variation_id',
                     'SAL.id AS adjust_line_id',
                     'transaction_sell_lines_purchase_lines.quantity',
-                    'transaction_sell_lines_purchase_lines.purchase_line_id', 'transaction_sell_lines_purchase_lines.id as tslpl_id'
+                    'transaction_sell_lines_purchase_lines.purchase_line_id',
+                    'transaction_sell_lines_purchase_lines.id as tslpl_id'
                 ])
                 ->get();
 
