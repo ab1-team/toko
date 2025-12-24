@@ -467,8 +467,8 @@ class TransactionUtil extends Util
                                 $kd_rekening_kredit  = '131.08';
                                 $kd_rekening_debit   = '132.01';
                             } elseif ($rek_type == 'discount') {
-                                $kd_rekening_kredit   = '111.99';
-                                $kd_rekening_debit  = '515.01';
+                                $kd_rekening_kredit   = '132.06';
+                                $kd_rekening_debit  = '515.03';
                             } elseif ($rek_type == 'cashback') {
                                 $kd_rekening_kredit   = '111.93';
                                 $kd_rekening_debit  = '516.01';
@@ -489,8 +489,8 @@ class TransactionUtil extends Util
                                 $kd_rekening_kredit  = '131.08';
                                 $kd_rekening_debit   = '132.01';
                             } elseif ($rek_type == 'discount') {
-                                $kd_rekening_kredit   = '111.99';
-                                $kd_rekening_debit  = '515.01';
+                                $kd_rekening_kredit   = '132.06';
+                                $kd_rekening_debit  = '515.03';
                             } elseif ($rek_type == 'cashback') {
                                 $kd_rekening_kredit   = '111.93';
                                 $kd_rekening_debit  = '516.01';
@@ -534,8 +534,8 @@ class TransactionUtil extends Util
                                 $kd_rekening_kredit  = '411.04';
                                 $kd_rekening_debit   = '111.09';
                             } elseif ($rek_type == 'discount') {
-                                $kd_rekening_kredit   = '121.99';
-                                $kd_rekening_debit  = '515.02';
+                                $kd_rekening_kredit   = '132.06';
+                                $kd_rekening_debit  = '515.03';
                             } elseif ($rek_type == 'cashback') {
                                 $kd_rekening_kredit   = '121.93';
                                 $kd_rekening_debit  = '516.02';
@@ -556,8 +556,8 @@ class TransactionUtil extends Util
                                 $kd_rekening_kredit  = '411.04';
                                 $kd_rekening_debit   = '111.09';
                             } elseif ($rek_type == 'discount') {
-                                $kd_rekening_kredit   = '121.99';
-                                $kd_rekening_debit  = '515.02';
+                                $kd_rekening_kredit   = '132.06';
+                                $kd_rekening_debit  = '515.03';
                             } elseif ($rek_type == 'cashback') {
                                 $kd_rekening_kredit   = '121.93';
                                 $kd_rekening_debit  = '516.02';
