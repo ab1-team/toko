@@ -78,6 +78,20 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
+                        {!! Form::label('diskon', 'Diskon / Potongan:') !!}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-money"></i>
+                            </span>
+                            {!! Form::text('diskon', 0, [
+                                'class' => 'form-control input_number',
+                                'placeholder' => 'Diskon / Potongan',
+                            ]) !!}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
                         {!! Form::label('shipping_charges', 'Shipping Charges:*') !!}
                         <div class="input-group">
                             <span class="input-group-addon">
@@ -164,3 +178,24 @@
 
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#amount, #diskon').on('keyup change', function(){
+            var amount = __read_number($('#amount'));
+            var diskon = __read_number($('#diskon'));
+            var max_amount = {{ $payment_line->amount }};
+            
+            if ((amount + diskon) > max_amount) {
+                toastr.error('Total (Bayar + Diskon) tidak boleh melebihi sisa hutang: ' + __currency_trans_from_en(max_amount, true));
+                // Handle Overflow - auto adjust diskon to fit
+                if (amount >= max_amount) {
+                    __write_number($('#amount'), max_amount);
+                    __write_number($('#diskon'), 0);
+                } else {
+                    __write_number($('#diskon'), max_amount - amount);
+                }
+            }
+        });
+    });
+</script>

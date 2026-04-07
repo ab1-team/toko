@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\TransactionPayment;
 use App\PembayaranHutang;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PembayaranHutangController extends Controller
 {
@@ -73,29 +75,54 @@ class PembayaranHutangController extends Controller
         $business_id = auth()->user()->business_id;
 
         try {
+            DB::beginTransaction();
+
             $ph             = new PembayaranHutang;
             $ph->id_payment = $request->id_payment;
             $ph->business_id= $business_id;
             $ph->cara_bayar = $request->cara_bayar;
             $ph->no_rekening= $request->no_rekening;
             $ph->atas_nama_rekening = $request->atas_nama_rekening; 
-            $ph->tgl_bayar  = \Carbon::createFromFormat('m/d/Y',$request->tgl_bayar)->format('Y-m-d');
+            $ph->tgl_bayar  = Carbon::createFromFormat('m/d/Y',$request->tgl_bayar)->format('Y-m-d');
             $ph->kd_invoice = $request->payment_ref_no;
+            
+            $kd_rekening_debit = '';
             if($request->cara_bayar == 'kas'){
                 $ph->kd_buku    = '211';
                 $ph->kd_rekening_debit  = '211.02';
                 $ph->kd_rekening_kredit = '111.23';
-            
+                $kd_rekening_debit = '211.02';
             }else{
                 $ph->kd_buku    = '211';
                 $ph->kd_rekening_debit= '211.03';
                 $ph->kd_rekening_kredit ='121.08';
-            
+                $kd_rekening_debit = '211.03';
             }
             $ph->nominal    = $request->jumlah_bayar;
             $ph->save();
+
+            // Handle Discount Recording
+            if (!empty($request->diskon) && $request->diskon > 0) {
+                $ph_discount             = new PembayaranHutang;
+                $ph_discount->id_payment = $request->id_payment;
+                $ph_discount->business_id= $business_id;
+                $ph_discount->cara_bayar = 'diskon';
+                $ph_discount->no_rekening= 'DISKON';
+                $ph_discount->atas_nama_rekening = 'DISKON';
+                $ph_discount->tgl_bayar  = Carbon::createFromFormat('m/d/Y', $request->tgl_bayar)->format('Y-m-d');
+                $ph_discount->kd_invoice = $request->payment_ref_no;
+
+                $ph_discount->kd_buku    = '211';
+                $ph_discount->kd_rekening_debit  = $kd_rekening_debit;
+                $ph_discount->kd_rekening_kredit = '411.07'; // Pendapatan Potongan Pembelian
+                $ph_discount->nominal    = $request->diskon;
+                $ph_discount->save();
+            }
+
+            DB::commit();
             
         } catch (\Exception $e) {
+            DB::rollBack();
             \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
         }
 

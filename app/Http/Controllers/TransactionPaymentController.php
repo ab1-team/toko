@@ -11,6 +11,7 @@ use App\TransactionPayment, App\Contact;
 use App\Transaction;
 
 use DB;
+use Carbon\Carbon;
 use App\Events\TransactionPaymentAdded,
     App\Events\TransactionPaymentUpdated,
     App\Events\TransactionPaymentDeleted;
@@ -78,7 +79,7 @@ class TransactionPaymentController extends Controller
                     'cheque_number', 'bank_account_number'
                 ]);
 
-                $inputs['paid_on']            = \Carbon::createFromFormat('m/d/Y', $request->input('paid_on'))->toDateTimeString();
+                $inputs['paid_on']            = Carbon::createFromFormat('m/d/Y', $request->input('paid_on'))->toDateTimeString();
                 $inputs['transaction_id']     = $transaction->id;
                 $amount                       = $this->transactionUtil->num_uf($inputs['amount']);
                 $inputs['amount']             = "$amount";
@@ -148,7 +149,7 @@ class TransactionPaymentController extends Controller
                     'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
                     'cheque_number', 'bank_account_number'
                 ]);
-                $shipping['paid_on'] = \Carbon::createFromFormat('m/d/Y', $request->input('paid_on'))->toDateTimeString();
+                $shipping['paid_on'] = Carbon::createFromFormat('m/d/Y', $request->input('paid_on'))->toDateTimeString();
                 $shipping['transaction_id']     = $transaction->id;
                 $shipping['amount']             = $this->transactionUtil->num_uf($request->input('shipping_charges'));
                 $shipping['created_by']         = auth()->user()->id;
@@ -164,6 +165,32 @@ class TransactionPaymentController extends Controller
                 $shipping['business_id'] = $request->session()->get('business.id');
 
                 $tp = TransactionPayment::create($inputs);
+
+                // Handle Discount Recording
+                $diskon = $this->transactionUtil->num_uf($request->input('diskon'));
+                if ($diskon > 0) {
+                    $discount_inputs = $inputs;
+                    $discount_inputs['amount'] = $diskon;
+                    $discount_inputs['method'] = 'diskon';
+                    $discount_inputs['note'] = 'Potongan Pembelian ('.$request->input('method').')';
+                    
+                    // Determine Account Codes based on Payment Method and Transaction Status
+                    $transaction = Transaction::find($inputs['transaction_id']);
+                    // Determine Account Codes based on Payment Method (Directly as requested)
+                    if ($request->input('method') == 'cash') {
+                        $discount_inputs['id_rekening_debit'] = '111.100';
+                        $discount_inputs['id_rekening_kredit'] = '411.07';
+                    } else {
+                        $discount_inputs['id_rekening_debit'] = '111.101';
+                        $discount_inputs['id_rekening_kredit'] = '411.08';
+                    }
+
+                    $prefix_type = 'purchase_payment';
+                    $ref_count_ds = $this->transactionUtil->setAndGetReferenceCount($prefix_type);
+                    $discount_inputs['payment_ref_no'] = $this->transactionUtil->generateReferenceNumber($prefix_type, $ref_count_ds);
+                    
+                    TransactionPayment::create($discount_inputs);
+                }
 
                 if ($this->transactionUtil->num_uf($request->input('shipping_charges')) > 0) {
                     $sp = TransactionPayment::create($shipping);
@@ -282,7 +309,7 @@ class TransactionPaymentController extends Controller
                 'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
                 'cheque_number', 'bank_account_number'
             ]);
-            $inputs['paid_on'] = \Carbon::createFromFormat('m/d/Y', $request->input('paid_on'))->toDateTimeString();
+            $inputs['paid_on'] = Carbon::createFromFormat('m/d/Y', $request->input('paid_on'))->toDateTimeString();
             $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
 
             if ($inputs['method'] == 'custom_pay_1') {
@@ -411,7 +438,7 @@ class TransactionPaymentController extends Controller
                 $payment_line = new TransactionPayment();
                 $payment_line->amount = $jml;
                 $payment_line->method = 'cash';
-                $payment_line->paid_on = \Carbon::now()->toDateString();
+                $payment_line->paid_on = Carbon::now()->toDateString();
 
                 //Accounts
                 $accounts = $this->moduleUtil->accountsDropdown($business_id, true);
@@ -526,7 +553,7 @@ class TransactionPaymentController extends Controller
             $contact_details->total_paid = empty($contact_details->total_paid) ? 0 : $contact_details->total_paid;
 
             $payment_line->method = 'cash';
-            $payment_line->paid_on = \Carbon::now()->toDateString();
+            $payment_line->paid_on = Carbon::now()->toDateString();
 
             $payment_types = $this->transactionUtil->payment_types();
 
@@ -559,7 +586,7 @@ class TransactionPaymentController extends Controller
                 'card_transaction_number', 'card_type', 'card_month', 'card_year', 'card_security',
                 'cheque_number', 'bank_account_number'
             ]);
-            $inputs['paid_on'] = \Carbon::createFromFormat('m/d/Y', $request->input('paid_on'))->toDateTimeString();
+            $inputs['paid_on'] = Carbon::createFromFormat('m/d/Y', $request->input('paid_on'))->toDateTimeString();
             $inputs['amount'] = $this->transactionUtil->num_uf($inputs['amount']);
             $inputs['created_by'] = auth()->user()->id;
             $inputs['payment_for'] = $contact_id;
@@ -713,7 +740,7 @@ class TransactionPaymentController extends Controller
                 $payment_line = new TransactionPayment();
                 $payment_line->amount = $amount;
                 $payment_line->method = 'cash';
-                $payment_line->paid_on = \Carbon::now()->toDateString();
+                $payment_line->paid_on = Carbon::now()->toDateString();
 
                 //Accounts
                 $accounts = $this->moduleUtil->accountsDropdown($business_id, true);

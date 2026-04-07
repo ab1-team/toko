@@ -254,7 +254,7 @@
                   <td>{{ @format_date($payment->paid_on) }}</td>
                   <td>{{ $payment->payment_ref_no }}</td>
                   <td><span class="display_currency" data-currency_symbol="true">{{ $payment->amount }}</span></td>
-                  <td>{{ $payment_types[$payment->method] }}</td>
+                  <td>{{ isset($payment_types[$payment->method]) ? $payment_types[$payment->method] : $payment->method }}</td>
                   <td>{{ $payment->note }}</td>
                   @if($accounts_enabled)
                     <td>{{$payment->payment_account->name or ''}}</td>

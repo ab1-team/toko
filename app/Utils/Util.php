@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use App\Business;
 use App\ReferenceCount;
+use Carbon\Carbon;
 
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
@@ -114,7 +115,7 @@ class Util
      */
     public function payment_types()
     {
-        $payment_types = ['cash' => __('lang_v1.cash')/*, 'card' => __('lang_v1.card'), 'cheque' => __('lang_v1.cheque')*/, 'bank_transfer' => __('lang_v1.bank_transfer')/*, 'tempo' => "Tempo"*/];
+        $payment_types = ['cash' => __('lang_v1.cash')/*, 'card' => __('lang_v1.card'), 'cheque' => __('lang_v1.cheque')*/, 'bank_transfer' => __('lang_v1.bank_transfer')/*, 'tempo' => "Tempo"*/, 'diskon' => 'Potongan'];
 
         /*if (config('constants.enable_custom_payment_1')) {
             $payment_types['custom_pay_1'] = __('lang_v1.custom_payment_1');
@@ -181,7 +182,7 @@ class Util
             $mysql_format = 'Y-m-d H:i:s';
         }
 
-        return \Carbon::createFromFormat($date_format, $date)->format($mysql_format);
+        return Carbon::createFromFormat($date_format, $date)->format($mysql_format);
     }
 
     /**
@@ -196,7 +197,7 @@ class Util
         if (session('business.time_format') == 12) {
             $time_format = 'h:i A';
         }
-        return \Carbon::createFromFormat($time_format, $time)->format('H:i');
+        return Carbon::createFromFormat($time_format, $time)->format('H:i');
     }
 
     /**
@@ -211,7 +212,7 @@ class Util
         if (session('business.time_format') == 12) {
             $time_format = 'h:i A';
         }
-        return \Carbon::createFromFormat('H:i:s', $time)->format($time_format);
+        return Carbon::createFromFormat('H:i:s', $time)->format($time_format);
     }
 
     /**
@@ -232,7 +233,7 @@ class Util
                 $format .= ' H:i';
             }
         }
-        return \Carbon::createFromTimestamp(strtotime($date))->format($format);
+        return Carbon::createFromTimestamp(strtotime($date))->format($format);
     }
 
     /**
@@ -292,7 +293,7 @@ class Util
         $ref_digits =  str_pad($ref_count, 4, 0, STR_PAD_LEFT);
 
         if (!in_array($type, ['contacts', 'business_location'])) {
-            $ref_year = \Carbon::now()->year;
+            $ref_year = Carbon::now()->year;
             $ref_number = $prefix . $ref_year . '/' . $ref_digits;
         } else {
             $ref_number = $prefix . $ref_digits;

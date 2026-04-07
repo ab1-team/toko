@@ -391,7 +391,39 @@ class PurchaseController extends Controller
                 "rek_type" => "pembelian"
             ]
         ];
-        // dd($payment_override);
+
+        if ($this->transactionUtil->num_uf($request->discount_amount) > 0) {
+            $discount_type = $request->discount_type;
+            $discount_amount = $this->transactionUtil->num_uf($request->discount_amount);
+
+            $discount = $discount_amount;
+            if ($discount_type == 'percentage') {
+                $total_item = $this->transactionUtil->num_uf($request->total_before_tax);
+                $discount = ($discount_amount * $total_item) / 100;
+            }
+
+            $discount_payment = [
+                "amount" => $discount,
+                "pay" => $discount,
+                "method" => $request->payment[0]['method'],
+                "card_number" => $request->payment[0]['card_number'],
+                "card_holder_name" => $request->payment[0]['card_holder_name'],
+                "card_transaction_number" => $request->payment[0]['card_transaction_number'],
+                "card_type" => $request->payment[0]['card_type'],
+                "card_month" => $request->payment[0]['card_month'],
+                "card_year" => $request->payment[0]['card_year'],
+                "card_security" => $request->payment[0]['card_security'],
+                "cheque_number" => $request->payment[0]['cheque_number'],
+                "bank_account_number" => $request->payment[0]['bank_account_number'],
+                "transaction_no_1" => $request->payment[0]['transaction_no_1'],
+                "transaction_no_2" => $request->payment[0]['transaction_no_2'],
+                "transaction_no_3" => $request->payment[0]['transaction_no_3'],
+                "note" => $request->payment[0]['note'],
+                "rek_type" => "discount"
+            ];
+
+            array_push($payment_override, $discount_payment);
+        }
 
         if ($request->shipping_charges > 0) {
 
@@ -843,6 +875,39 @@ class PurchaseController extends Controller
 
             //update transaction
             $transaction->update($update_data);
+
+            //Update discount payment record
+            $discount_amount = $this->productUtil->num_uf($request->discount_amount);
+            $total_before_tax = $this->productUtil->num_uf($request->total_before_tax);
+            $calculated_discount = $discount_amount;
+            if ($request->discount_type == 'percentage') {
+                $calculated_discount = ($discount_amount * $total_before_tax) / 100;
+            }
+
+            $discount_payment = TransactionPayment::where('transaction_id', $transaction->id)
+                ->where('rek_type', 'discount')
+                ->first();
+
+            if ($calculated_discount > 0) {
+                if ($discount_payment) {
+                    $discount_payment->amount = $calculated_discount;
+                    $discount_payment->pay = $calculated_discount;
+                    $discount_payment->method = 'cash';
+                    $discount_payment->save();
+                } else {
+                    TransactionPayment::create([
+                        'transaction_id' => $transaction->id,
+                        'amount' => $calculated_discount,
+                        'pay' => $calculated_discount,
+                        'method' => 'cash',
+                        'paid_on' => $transaction->transaction_date,
+                        'rek_type' => 'discount',
+                        'business_id' => $business_id
+                    ]);
+                }
+            } elseif ($discount_payment) {
+                $discount_payment->delete();
+            }
 
             //Update transaction payment status
             $this->transactionUtil->updatePaymentStatus($transaction->id);

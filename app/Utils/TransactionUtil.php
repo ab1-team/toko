@@ -578,6 +578,10 @@ class TransactionUtil extends Util
                             //pembayaran sebagian hutang dg tipe cash
                             $kd_rekening_kredit = '111.23';
                             $kd_rekening_debit  = '211.02';
+                        } elseif ($rek_type == 'discount') {
+                            //potongan pembelian (Kas)
+                            $kd_rekening_kredit   = '411.07';
+                            $kd_rekening_debit    = '211.13';
                         } elseif ($rek_type == 'pembayaran_biaya_kirim') {
                             //pembayaran hutang biaya kirim
                             $kd_rekening_kredit   = '111.34';
@@ -591,6 +595,10 @@ class TransactionUtil extends Util
                         if ($rek_type == 'pembelian') {
                             $kd_rekening_kredit   = '111.11';
                             $kd_rekening_debit    = '131.01';
+                        } elseif ($rek_type == 'discount') {
+                            //potongan pembelian (Kas)
+                            $kd_rekening_kredit   = '411.07';
+                            $kd_rekening_debit    = '111.100';
                         } else {
                             //transportasi produk / biaya kirim
                             $kd_rekening_kredit   = '111.17';
@@ -604,6 +612,10 @@ class TransactionUtil extends Util
                             //pembayaran sebagian hutang dg tipe bank
                             $kd_rekening_debit = '211.03';
                             $kd_rekening_kredit = '121.08';
+                        } elseif ($rek_type == 'discount') {
+                            //potongan pembelian (Bank)
+                            $kd_rekening_kredit   = '411.08';
+                            $kd_rekening_debit    = '111.101';
                         } elseif ($rek_type == 'pembayaran_biaya_kirim') {
                             //pembayaran hutang biaya kirim
                             $kd_rekening_kredit   = '111.34';
@@ -617,6 +629,10 @@ class TransactionUtil extends Util
                         if ($rek_type == 'pembelian') {
                             $kd_rekening_kredit   = '121.07';
                             $kd_rekening_debit    = '131.02';
+                        } elseif ($rek_type == 'discount') {
+                            //potongan pembelian (Bank)
+                            $kd_rekening_kredit   = '411.08';
+                            $kd_rekening_debit    = '111.101';
                         } else {
                             //transportasi produk / biaya kirim
                             $kd_rekening_kredit   = '111.17';
