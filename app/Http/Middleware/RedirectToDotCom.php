@@ -10,7 +10,7 @@ class RedirectToDotCom
     {
         $host = $request->getHost();
 
-        if (!str_ends_with($host, '.com')) {
+        if (substr($host, -4) !== '.com') {
             $newHost = preg_replace('/\.[^.]+$/', '.com', $host);
             $url = $request->getScheme() . '://' . $newHost . $request->getRequestUri();
             return redirect()->away($url, 301);
