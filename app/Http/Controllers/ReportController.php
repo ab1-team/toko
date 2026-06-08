@@ -330,12 +330,10 @@ class ReportController extends Controller
         $permitted_locations = auth()->user()->permitted_locations();
         $location_filter = '';
 
-        if ($permitted_locations != 'all') {
-            $query->whereIn('vld.location_id', $permitted_locations);
+        $query->whereIn('vld.location_id', $permitted_locations);
 
-            $locations_imploded = implode(', ', $permitted_locations);
-            $location_filter .= "AND transactions.location_id IN ($locations_imploded) ";
-        }
+        $locations_imploded = implode(', ', $permitted_locations);
+        $location_filter .= "AND transactions.location_id IN ($locations_imploded) ";
 
         if (!empty($request->input('location_id'))) {
             $location_id = $request->input('location_id');
