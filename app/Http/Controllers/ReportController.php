@@ -263,9 +263,6 @@ class ReportController extends Controller
                     'contacts.id'
                 );
             $permitted_locations = auth()->user()->permitted_locations();
-            if ($permitted_locations != 'all') {
-                $contacts->whereIn('t.location_id', $permitted_locations);
-            }
             return Datatables::of($contacts)
                 ->editColumn('name', function ($row) {
                     return '<a href="' . action('ContactController@show', [$row->id]) . '" target="_blank">' .
@@ -459,13 +456,6 @@ class ReportController extends Controller
             $permitted_locations = auth()->user()->permitted_locations();
             $location_filter = '';
 
-            if ($permitted_locations != 'all') {
-                $query->whereIn('vld.location_id', $permitted_locations);
-
-                $locations_imploded = implode(', ', $permitted_locations);
-                $location_filter .= "AND transactions.location_id IN ($locations_imploded) ";
-            }
-
             if (!empty($request->input('location_id'))) {
                 $location_id = $request->input('location_id');
 
@@ -622,11 +612,6 @@ class ReportController extends Controller
 
             $permitted_locations = auth()->user()->permitted_locations();
             $location_filter = '';
-            if ($permitted_locations != 'all') {
-                $query->whereIn('vld.location_id', $permitted_locations);
-                $locations_imploded = implode(', ', $permitted_locations);
-                $location_filter .= "AND transactions.location_id IN ($locations_imploded) ";
-            }
 
             if (!empty($request->input('location_id'))) {
                 $location_id = $request->input('location_id');
@@ -834,9 +819,6 @@ class ReportController extends Controller
 
             //Check for permitted locations of a user
             $permitted_locations = auth()->user()->permitted_locations();
-            if ($permitted_locations != 'all') {
-                $query->whereIn('location_id', $permitted_locations);
-            }
 
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
@@ -1098,10 +1080,6 @@ class ReportController extends Controller
                 ->whereRaw('purchase_lines.quantity > purchase_lines.quantity_sold + quantity_adjusted + quantity_returned');
 
             $permitted_locations = auth()->user()->permitted_locations();
-
-            if ($permitted_locations != 'all') {
-                $query->whereIn('t.location_id', $permitted_locations);
-            }
 
             if (!empty($request->input('location_id'))) {
                 $location_id = $request->input('location_id');
@@ -1740,13 +1718,6 @@ class ReportController extends Controller
 
             $permitted_locations = auth()->user()->permitted_locations();
             $location_filter = 'WHERE ';
-
-            if ($permitted_locations != 'all') {
-                $query->whereIn('t.location_id', $permitted_locations);
-
-                $locations_imploded = implode(', ', $permitted_locations);
-                $location_filter = " LEFT JOIN transactions as t2 on pls.transaction_id=t2.id WHERE t2.location_id IN ($locations_imploded) AND ";
-            }
 
             if (!empty($request->input('location_id'))) {
                 $location_id = $request->input('location_id');
